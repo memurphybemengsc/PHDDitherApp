@@ -1,6 +1,9 @@
 ﻿Public Class Form1
     Dim fileCount As Integer = 0
     Dim ditherFileCount As Integer
+    Dim ascomUtils As New AscomUtilities
+    Dim guider As New PHD2Guiding()
+
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         If Me.ComboBoxDither.Items.Count > 0 Then
             Me.ComboBoxDither.SelectedIndex = 0
@@ -9,8 +12,8 @@
 
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles BtnConnect.Click
-        If PHD2Guiding.checkPHD2IsRunning Then
-            If PHD2Guiding.checkPHD2IsGuiding Then
+        If guider.checkPHD2IsRunning Then
+            If guider.checkPHD2IsGuiding Then
                 If FolderBrowserDialog1.ShowDialog() = DialogResult.OK Then
                     TextBox1.Text = FolderBrowserDialog1.SelectedPath
                     Me.BtnStart.Enabled = True
@@ -55,13 +58,29 @@
             Me.fileCount = localFileCount
             ditherFileCount -= 1
             If ditherFileCount = 0 Then
-                PHD2Guiding.dither()
+                guider.dither()
                 ditherFileCount = NumericUpDown1.Value
             End If
         End If
     End Sub
 
     Private Sub BtnDither_Click(sender As Object, e As EventArgs) Handles BtnDither.Click
-        PHD2Guiding.dither()
+        guider.dither()
+    End Sub
+
+    Private Sub BtnMount_Click(sender As Object, e As EventArgs) Handles BtnMount.Click
+        ascomUtils.chooseAndConnectToMount()
+    End Sub
+
+    Private Sub TmrControl_Tick(sender As Object, e As EventArgs) Handles TmrControl.Tick
+        ' This timer checks whether the mount is slewing and stops/starts dither
+        If ascomUtils.isMountConnected AndAlso ascomUtils.isMountSlewing Then
+            guider.stopGuiding()
+            Timer1.Stop()
+        ElseIf ascomUtils.isMountConnected AndAlso Not ascomUtils.isMountSlewing Then
+            Me.fileCount += 1 ' Increment the file count so the first post restart image won't trigger a dither
+            guider.startGuiding()
+            Timer1.Start()
+        End If
     End Sub
 End Class

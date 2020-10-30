@@ -256,7 +256,7 @@ Public Class PHD2Guiding
         End Get
     End Property
 
-    Public Shared Function initTcpConnection() As Boolean
+    Public Function initTcpConnection() As Boolean
         If PHD2Guiding.tcpConnected = False Then
             tcpConnected = True
             Try
@@ -274,7 +274,7 @@ Public Class PHD2Guiding
         Return tcpConnected
     End Function
 
-    Public Shared Function SendMessage(message As Byte) As Byte
+    Public Function SendMessage(message As Byte) As Byte
         Dim retval As Byte = vbNull
         If initTcpConnection() = False Then Return retval
 
@@ -287,14 +287,14 @@ Public Class PHD2Guiding
         Return retval
     End Function
 
-    Public Shared Function checkPHD2IsRunning() As Boolean
+    Public Function checkPHD2IsRunning() As Boolean
         Return initTcpConnection()
     End Function
 
-    Public Shared Function checkPHD2IsGuiding() As Boolean
+    Public Function checkPHD2IsGuiding() As Boolean
         Dim isPHD2Guiding As Boolean = True
 
-        Dim phdStatus As Byte = PHD2Guiding.SendMessage(PHD2Guiding.MSG_GETSTATUS)
+        Dim phdStatus As Byte = SendMessage(PHD2Guiding.MSG_GETSTATUS)
 
         If phdStatus <> 3 Then
             isPHD2Guiding = False
@@ -303,11 +303,59 @@ Public Class PHD2Guiding
         Return isPHD2Guiding
     End Function
 
-    Public Shared Sub dither()
-        If PHD2Guiding.SendMessage(PHD2Guiding.MSG_GETSTATUS) = 3 Then
-            PHD2Guiding.SendMessage(getDitherMove())
+    Public Sub dither()
+        If SendMessage(PHD2Guiding.MSG_GETSTATUS) = 3 Then
+            SendMessage(getDitherMove())
         End If
     End Sub
+
+    Public Sub stopGuiding()
+        If SendMessage(PHD2Guiding.MSG_GETSTATUS) = 3 Then
+            SendMessage(PHD2Guiding.MSG_STOP)
+        End If
+    End Sub
+
+    Public Sub startGuiding()
+        If SendMessage(PHD2Guiding.MSG_GETSTATUS) = 0 Then
+            SendMessage(PHD2Guiding.MSG_LOOP)
+        End If
+
+        waitUntilStatusWithTimeOut(0, 100)
+
+        If SendMessage(PHD2Guiding.MSG_GETSTATUS) = 3 Then
+            SendMessage(PHD2Guiding.MSG_LOOP)
+            SendMessage(PHD2Guiding.MSG_AUTOFINDSTAR)
+            SendMessage(PHD2Guiding.MSG_STARTGUIDING)
+        End If
+        If SendMessage(PHD2Guiding.MSG_GETSTATUS) = 3 Then
+            SendMessage(PHD2Guiding.MSG_LOOP)
+            SendMessage(PHD2Guiding.MSG_AUTOFINDSTAR)
+            SendMessage(PHD2Guiding.MSG_STARTGUIDING)
+        End If
+    End Sub
+
+    Private Function waitUntilStatusWithTimeOut(status As Integer, timeOut As Long) As Boolean
+        Dim retval As Boolean
+        Dim locStopWatch As Stopwatch
+        Dim locStatus As Byte
+        Dim continueLoop As Boolean
+
+        continueLoop = True
+        locStopWatch = Stopwatch.StartNew()
+        Do
+            locStatus = SendMessage(PHD2Guiding.MSG_GETSTATUS)
+            If locStatus = status Then
+                retval = True
+                continueLoop = False
+            ElseIf locStopWatch.ElapsedMilliseconds > timeOut Then
+                retval = False
+                continueLoop = False
+            End If
+        Loop While continueLoop
+
+        Return retval
+    End Function
+
 
     Public Shared Function getDitherMove() As Byte
         Dim ditherMove As Byte = PHD2Guiding.MSG_MOVE1
