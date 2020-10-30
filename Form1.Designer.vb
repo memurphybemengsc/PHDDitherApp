@@ -47,6 +47,8 @@ Partial Class Form1
         Me.NumericUpDownScanSeconds = New System.Windows.Forms.NumericUpDown()
         Me.TmrControl = New System.Windows.Forms.Timer(Me.components)
         Me.Label7 = New System.Windows.Forms.Label()
+        Me.CheckBoxStopGuiding = New System.Windows.Forms.CheckBox()
+        Me.CheckBoxStartGuiding = New System.Windows.Forms.CheckBox()
         CType(Me.NumericUpDown1, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.NumericUpDownTCPPort, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.NumericUpDownScanSeconds, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -275,11 +277,33 @@ Partial Class Form1
         Me.Label7.TabIndex = 21
         Me.Label7.Text = "If this doesn't work write DOS program to start guiding if not slewing"
         '
+        'CheckBoxStopGuiding
+        '
+        Me.CheckBoxStopGuiding.AutoSize = True
+        Me.CheckBoxStopGuiding.Location = New System.Drawing.Point(366, 236)
+        Me.CheckBoxStopGuiding.Name = "CheckBoxStopGuiding"
+        Me.CheckBoxStopGuiding.Size = New System.Drawing.Size(216, 21)
+        Me.CheckBoxStopGuiding.TabIndex = 24
+        Me.CheckBoxStopGuiding.Text = "Stop Guiding if mount slewing"
+        Me.CheckBoxStopGuiding.UseVisualStyleBackColor = True
+        '
+        'CheckBoxStartGuiding
+        '
+        Me.CheckBoxStartGuiding.AutoSize = True
+        Me.CheckBoxStartGuiding.Location = New System.Drawing.Point(366, 277)
+        Me.CheckBoxStartGuiding.Name = "CheckBoxStartGuiding"
+        Me.CheckBoxStartGuiding.Size = New System.Drawing.Size(252, 21)
+        Me.CheckBoxStartGuiding.TabIndex = 25
+        Me.CheckBoxStartGuiding.Text = "Start guiding if mount is not slewing"
+        Me.CheckBoxStartGuiding.UseVisualStyleBackColor = True
+        '
         'Form1
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1067, 554)
+        Me.Controls.Add(Me.CheckBoxStartGuiding)
+        Me.Controls.Add(Me.CheckBoxStopGuiding)
         Me.Controls.Add(Me.Label7)
         Me.Controls.Add(Me.BtnMount)
         Me.Controls.Add(Me.NumericUpDownScanSeconds)
@@ -334,4 +358,6 @@ Partial Class Form1
     Friend WithEvents BtnMount As Button
     Friend WithEvents TmrControl As Timer
     Friend WithEvents Label7 As Label
+    Friend WithEvents CheckBoxStopGuiding As CheckBox
+    Friend WithEvents CheckBoxStartGuiding As CheckBox
 End Class

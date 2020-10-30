@@ -76,10 +76,10 @@
 
     Private Sub TmrControl_Tick(sender As Object, e As EventArgs) Handles TmrControl.Tick
         ' This timer checks whether the mount is slewing and stops/starts dither
-        If ascomUtils.isMountConnected AndAlso ascomUtils.isMountSlewing Then
+        If ascomUtils.isMountConnected AndAlso ascomUtils.isMountSlewing AndAlso CheckBoxStopGuiding.Checked Then
             guider.stopGuiding()
             Timer1.Stop()
-        ElseIf ascomUtils.isMountConnected AndAlso Not ascomUtils.isMountSlewing Then
+        ElseIf ascomUtils.isMountConnected AndAlso Not ascomUtils.isMountSlewing AndAlso CheckBoxStartGuiding.Checked Then
             Me.fileCount += 1 ' Increment the file count so the first post restart image won't trigger a dither
             guider.startGuiding()
             Timer1.Start()
