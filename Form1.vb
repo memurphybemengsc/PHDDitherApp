@@ -38,6 +38,7 @@
         Timer1.Interval = Me.NumericUpDownScanSeconds.Value * 1000
         NumericUpDownScanSeconds.Enabled = False
         Me.Timer1.Start()
+        TmrControl.Start()
     End Sub
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles BtnStop.Click
@@ -46,6 +47,7 @@
         Me.BtnDither.Enabled = True
         NumericUpDownScanSeconds.Enabled = True
         Me.Timer1.Stop()
+        TmrControl.Stop()
     End Sub
 
     Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
